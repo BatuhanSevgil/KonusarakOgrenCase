@@ -1,0 +1,60 @@
+@page "/questionComp"
+
+@inject AppStateManager state
+
+<div class="row">
+  <div class="col-12">
+    @* question *@
+    <input type="text" class="form-control w-100" @bind="state.questions[questionId].QuestionText" name="Question"
+      placeholder="Soru" id="">
+  </div>
+  <div class="col-12">
+    <div class="row mt-3 mb-3">
+
+      <div class="col-6">
+        <input type="text" placeholder="A" disabled=@disabled @bind="state.questions[questionId].Options[0].Value"
+          class="form-control w-100 mb-2">
+        <input type="text" placeholder="C" @bind="state.questions[questionId].Options[2].Value"
+          class="form-control w-100">
+
+      </div>
+      <div class="col-6">
+        <input type="text" placeholder="B" @bind="state.questions[questionId].Options[1].Value"
+          class="form-control w-100 mb-2">
+        <input type="text" placeholder="D" @bind="state.questions[questionId].Options[3].Value"
+          class="form-control w-100">
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+  <div class="d-inline-flex justify-content-center pb-2 pt-2">
+    <select @onchange="optionCorrect" name="" id="">
+      <option value="-1">Doğru Cevabı Seçiniz</option>
+      <option disabled=@string.IsNullOrWhiteSpace(state.questions[questionId].Options[0].Value) value="0">A</option>
+      <option disabled=@string.IsNullOrWhiteSpace(state.questions[questionId].Options[1].Value) value="1">B</option>
+      <option disabled=@string.IsNullOrWhiteSpace(state.questions[questionId].Options[2].Value) value="2">C</option>
+      <option disabled=@string.IsNullOrWhiteSpace(state.questions[questionId].Options[3].Value) value="3">D</option>
+    </select>
+  </div>
+</div>
+
+@code {
+  [Parameter] public int questionId { get; set; }
+  [Parameter] public bool disabled { get; set; } = false;
+
+  public void optionCorrect(ChangeEventArgs e)
+  {
+    if (Convert.ToInt16(e.Value) == -1) return;
+
+    for (int i = 0; i < state.questions[questionId].Options.Count; i++)
+    {
+      state.questions[questionId].Options[i].isCorrect = false;
+    }
+
+    state.questions[questionId].Options[int.Parse(e.Value.ToString())].isCorrect = true;
+  }
+}

@@ -1,0 +1,2 @@
+cd WebUI
+dotnet run

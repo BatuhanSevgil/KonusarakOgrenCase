@@ -1,0 +1,107 @@
+@page "/Answer"
+@using Entities.Models
+@using Entity.Concrete
+@using Newtonsoft.Json
+@inject Blazored.LocalStorage.ISyncLocalStorageService localStorage
+@inject AnswerStateManager _answerState
+
+
+<style>
+  .unselectedAnswer {
+    background-color: #5C5C5C;
+  }
+
+  .selectedAnswer {
+    background-color: #2F3A8F;
+  }
+</style>
+<div class="row pt-2">
+  <div class="col-12">
+    <p class="text-center border border-2 rounded-2 p-1 text-wrap">@question.QuestionText</p>
+  </div>
+
+  <div class="row">
+
+    <div class="col-12 d-inline-flex">
+      <div @onclick="@( ()=>changeSelectAnswer(0))" class=' @styleText  
+        @(selectedAnswer[0] ?"selectedAnswer":"unselectedAnswer") 
+        @((selectedAnswer[0] && isCorrect==1?"bg-success":"")) 
+        @((selectedAnswer[0] && isCorrect==0? "bg-danger":""))
+        @((selectedAnswer[0]&& isCorrect==-1? "unselectedAnswer":""))
+
+        '>@question.Options[0].Value</div>
+
+      <div class='@styleText
+    @(selectedAnswer[1] ?"selectedAnswer":"unselectedAnswer")  
+    @(( selectedAnswer[1]&& isCorrect==1?"bg-success":"")) 
+    @((selectedAnswer[1]&& isCorrect==0? "bg-danger":""))
+    @((selectedAnswer[1]&& isCorrect==-1? "unselectedAnswer":""))
+    ' @onclick="@( ()=>changeSelectAnswer(1))">
+        @question.Options[1].Value</div>
+    </div>
+  </div>
+  <div class="row">
+
+
+    <div class="col-12 d-inline-flex">
+      <div class='@styleText 
+      @(selectedAnswer[2] ?"selectedAnswer":"unselectedAnswer")
+      @((selectedAnswer[2] && isCorrect==1?"bg-success":"")) 
+      @((selectedAnswer[2] && isCorrect==0? "bg-danger":""))
+      @((selectedAnswer[2]&& isCorrect==-1? "unselectedAnswer":""))
+      ' @onclick="@( ()=>changeSelectAnswer(2))">@question.Options[2].Value</div>
+
+      <div class='@styleText
+      @(( selectedAnswer[3]&& isCorrect==1?"bg-success":"")) 
+      @((selectedAnswer[3]&&  isCorrect==0? "bg-danger":""))
+      @((selectedAnswer[3]&& isCorrect==-1? "unselectedAnswer":""))
+      @(selectedAnswer[3] ?"selectedAnswer":"unselectedAnswer") ' @onclick="@( ()=>changeSelectAnswer(3))">
+        @question.Options[3].Value</div>
+
+    </div>
+  </div>
+
+
+</div>
+@code {
+  public List<bool> selectedAnswer = new List<bool>() { false, false, false, false };
+  private string styleText = "col-6 border text-white border-2 p-1 d-inline-flex justify-content-center rounded-3";
+  [Parameter] public Question question { get; set; }
+  [Parameter] public string QuizId { get; set; }
+  [Parameter] public int isCorrect { get; set; } = -1;
+  private int _answerId { get; set; }
+
+
+
+  protected override void OnInitialized()
+  {
+    _answerState.answers.Add(new AnswerDto()
+    {
+      QuizId = Convert.ToInt32(QuizId),
+      QuestionId = question.Id,
+      SelectedOptionId = -1,
+      UserId = localStorage.GetItem<User>("user").Id
+    });
+    _answerId = _answerState.answers.FindIndex(item => item.QuestionId == question.Id);
+
+
+  }
+  public void changeSelectAnswer(int id)
+  {
+    isCorrect = -1;
+    if (selectedAnswer[id] == true)
+    {
+      selectedAnswer[id] = false;
+      _answerState.answers[_answerId].SelectedOptionId = -1;
+    }
+    else
+    {
+      selectedAnswer = new List<bool> { false, false, false, false };
+      selectedAnswer[id] = true;
+      _answerState.answers[_answerId].SelectedOptionId = id;
+    }
+
+  }
+
+
+}

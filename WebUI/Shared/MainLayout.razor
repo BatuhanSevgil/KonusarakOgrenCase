@@ -1,0 +1,41 @@
+﻿@inherits LayoutComponentBase
+@using Entities.Models
+@using WebUI.Services.Abstract
+@inject IContentService _contentService
+@inject NavigationManager NavManager
+
+@inject Blazored.LocalStorage.ISyncLocalStorageService localStorage
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <div class="main">
+        <div class="top-row px-4">
+            <button class="btn btn-success" @onclick="Sync">Wired Content Sync</button>
+        </div>
+
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+
+@code {
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        var user = localStorage.GetItemAsString("user");
+        if (String.IsNullOrEmpty(user))
+        {
+            NavManager.NavigateTo("/");
+        }
+    }
+
+    public async void Sync()
+    {
+        await _contentService.Sync();
+    }
+
+}

@@ -1,0 +1,115 @@
+@page "/create"
+@using Entities.Models
+@using Entity.Concrete
+@using WebUI.Services.Abstract
+@inject HttpClient Http
+@inject IContentService _contentService
+@inject Blazored.LocalStorage.ISyncLocalStorageService _localStorage
+@inject AppStateManager state
+@inject IQuizService _quizManager
+
+<div class="container">
+
+  <div class="row">
+   <div class="col-12">
+     <p class="h4 text-center">Yazılar</p></div> 
+   <div class="col-12">
+     
+     @* selectbox  *@
+   <select class="form-select" @onchange="onChange" aria-label="Default select example">
+
+     @if (Contents!=null)
+     {
+       <option selected >Seçiniz </option>
+       @foreach (var item in Contents.Data.GetRange(0,10))
+       {
+
+        <option value="@item.Id">@item.Title</option>
+           
+       }
+         
+     }
+</select>
+   </div>
+
+     @* selectbox *@
+   </div> 
+   <div class="row">
+     <div class="col-12">
+  <div class="form-floating mt-3  pr-0">
+  <textarea class="form-control w-100" disabled id="floatingTextarea">
+    @if (state.Content!=null)
+    {
+      @state.Content.Description
+        
+    } </textarea>
+   <label for="floatingTextarea">Comments</label>
+</div>
+</div>
+   </div>
+
+@* Question section *@
+
+<div class="row pt-2">
+    <div class="col-6"><QuestionComp questionId=0/></div>
+    <div class="col-6"><QuestionComp questionId=1/></div>
+</div>
+
+<div class="row pt-2">
+    <div class="col-6"><QuestionComp questionId=2/></div>
+    <div class="col-6"><QuestionComp questionId=3/></div>
+  </div>
+
+
+
+
+@* / Question section *@
+<div class="row">
+
+  
+  <div class="col-12">
+
+  <Alert color="success" hidden="sendStatus!=1" text="Sınav başarılıyla oluşturuldu" style="mt-3  text-center"></Alert>
+  <Alert color="danger" hidden="sendStatus!=0" text="Sınav oluşturulurken hata alındı" style="mt-3  text-center"></Alert>
+  <Alert color="info"  hidden="sendStatus!=2"text="Sınav oluşturuluyor" style="mt-3  text-center"></Alert>
+
+
+</div>
+<div class="col-12  d-inline-flex justify-content-center">
+  <button @onclick="Send" class="btn btn-success">Gönder</button>
+  </div>
+</div>
+</div>
+
+@code{
+
+  public Content selectedContent=null;
+  public int sendStatus { get; set; }=-1;
+  public DataResult<List<Content>> Contents=null;
+
+public void onChange(ChangeEventArgs e ){
+  state.Content =Contents.Data.Find(item=>item.Id.ToString()==e.Value.ToString());
+}
+
+   protected override async Task OnInitializedAsync(){
+     Contents= await _contentService.GetAll();
+     if(Contents.Data.Count==0){
+
+       await _contentService.Sync();
+
+     }
+     
+     
+   }
+
+public async void Send(){
+  int userId=_localStorage.GetItem<User>("user").Id;
+   
+  sendStatus=2;
+  StateHasChanged();
+  sendStatus =await _quizManager.CreateQuiz(userId);
+  StateHasChanged();
+
+}
+ 
+}

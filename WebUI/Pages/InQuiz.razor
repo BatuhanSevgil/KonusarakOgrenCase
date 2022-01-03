@@ -1,0 +1,57 @@
+@page "/quiz/{quizId}"
+@using Entity.Concrete
+@using WebUI
+@using WebUI.Entities.Models
+@using WebUI.Services.Abstract
+@using Newtonsoft.Json
+@inject IQuizService _quizService
+@inject AnswerStateManager _answerState
+
+@if (quiz == null)
+{
+  <p>loading...</p>
+}
+else
+{
+
+  <div class="row">
+
+    @foreach (var item in quiz.Data.Questions)
+    {
+
+      <div class="col-6">
+
+        <Answer question=item QuizId=@quizId isCorrect=@isCorrect[quiz.Data.Questions.IndexOf(item)] />
+      </div>
+
+    }
+  </div>
+  <div class="row p-3">
+    <div class="col-12 d-inline-flex justify-content-center">
+      <button @onclick="AnswerCheck" class="btn  w-25 btn-success">Gönder</button>
+    </div>
+  </div>
+
+}
+@code {
+  [Parameter] public string quizId { get; set; } = null;
+
+  public DataResult<Quiz> quiz { get; set; }
+  public List<int> isCorrect = new List<int>() { -1, -1, -1, -1 };
+
+
+  protected override async Task OnInitializedAsync()
+  {
+    quiz = await _quizService.GetById(int.Parse(quizId));
+
+  }
+
+  public async Task AnswerCheck()
+  {
+    var result = await _quizService.CheckAnswer(_answerState.answers);
+    _answerState.questionResult = result.Data;
+    isCorrect = result.Data;
+
+
+  }
+}

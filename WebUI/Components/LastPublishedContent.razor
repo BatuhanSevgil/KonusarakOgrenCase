@@ -1,0 +1,73 @@
+@page "/LastPublishedContent"
+@using Entities.Models
+@using WebUI.Services.Abstract
+@inject IContentService _contentService
+@using Newtonsoft.Json;
+
+
+
+<div>
+   @if (Contents == null)
+   {
+      <p>Loading...</p>
+
+   }
+   else
+   {
+
+
+
+      <table class="table">
+         <thead>
+            <tr>
+               <th scope="col">#id</th>
+               <th scope="col">Title</th>
+               <th scope="col">Descripton</th>
+               <th scope="col">Content Publish Date</th>
+               <th scope="col">RSS Publish Date</th>
+               <th scope="col"></th>
+
+            </tr>
+         </thead>
+         <tbody>
+            @foreach (var item in Contents.Data.GetRange(0, @take))
+            {
+               <tr>
+                  <td>@item.Id</td>
+                  <td>@item.Title</td>
+                  <td>@item.Description</td>
+                  <td>@item.PublishContentDate</td>
+                  <td>@item.PublishRssDate</td>
+                  @* <td><button class="btn btn-success">Sınav Oluştur</button></td> *@
+
+
+               </tr>
+            }
+         </tbody>
+      </table>
+
+   }
+</div>
+
+@code {
+
+   public DataResult<List<Content>> Contents = null;
+   [Parameter] public int take { get; set; } = 10;
+   [Parameter] public bool View { get; set; } = false;
+
+   protected override async Task OnInitializedAsync()
+   {
+      Contents = await _contentService.GetAll();
+      if (Contents.Data.Count < 11)
+      {
+         await _contentService.Sync();
+         Contents = await _contentService.GetAll();
+
+      }
+      StateHasChanged();
+
+
+
+
+   }
+}

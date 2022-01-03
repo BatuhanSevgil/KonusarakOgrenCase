@@ -1,0 +1,14 @@
+﻿@page "/Alert"
+@layout LoginLayout
+
+<div class="alert alert-@color @style" hidden=@hidden role="alert">
+  <strong>@text</strong>
+</div>
+@code {
+
+  [Parameter] public string color { get; set; }
+  [Parameter] public string text { get; set; }
+  [Parameter] public string style { get; set; }
+  [Parameter] public bool hidden { get; set; }
+
+}

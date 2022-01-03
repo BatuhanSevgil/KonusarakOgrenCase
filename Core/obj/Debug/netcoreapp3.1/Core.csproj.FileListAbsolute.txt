@@ -1,0 +1,10 @@
+C:\Users\B\source\repos\QuizApp\Core\bin\Debug\netcoreapp3.1\Core.deps.json
+C:\Users\B\source\repos\QuizApp\Core\bin\Debug\netcoreapp3.1\Core.dll
+C:\Users\B\source\repos\QuizApp\Core\bin\Debug\netcoreapp3.1\Core.pdb
+C:\Users\B\source\repos\QuizApp\Core\obj\Debug\netcoreapp3.1\Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\B\source\repos\QuizApp\Core\obj\Debug\netcoreapp3.1\Core.AssemblyInfoInputs.cache
+C:\Users\B\source\repos\QuizApp\Core\obj\Debug\netcoreapp3.1\Core.AssemblyInfo.cs
+C:\Users\B\source\repos\QuizApp\Core\obj\Debug\netcoreapp3.1\Core.csproj.CoreCompileInputs.cache
+C:\Users\B\source\repos\QuizApp\Core\obj\Debug\netcoreapp3.1\Core.dll
+C:\Users\B\source\repos\QuizApp\Core\obj\Debug\netcoreapp3.1\Core.pdb
+C:\Users\B\source\repos\QuizApp\Core\obj\Debug\netcoreapp3.1\Core.csproj.AssemblyReference.cache

@@ -1,0 +1,79 @@
+@page "/quiz"
+@using Entity.Concrete
+@using WebUI.Entities.Models
+@using WebUI.Services.Abstract
+@inject IQuizService _quizService
+@inject NavigationManager NavigationManager
+
+
+<div>
+  @if (Quizes == null)
+  {
+    <p>Loading...</p>
+
+  }
+  else
+  {
+
+
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Quiz Id</th>
+          <th scope="col">Content Id</th>
+          <th scope="col">Session</th>
+          <th scope="col">Content Title</th>
+          <th scope="col">Oluşturan Kullanıcı</th>
+          <th scope="col">RSS Publish Date</th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var item in Quizes.Data)
+        {
+          <tr>
+            <td>#@item.Id</td>
+            <td>@item.Content.Id</td>
+            <td>@item.Session</td>
+            <td>@item.Content.Title</td>
+            <td>@item.User.Title</td>
+            <td>@item.Content.PublishContentDate</td>
+            <td>
+              <button @onclick="@(()=>route(item.Id))" class="btn  btn-success">Sınav'a Gir</button>
+            </td>
+            <td>
+              <button @onclick="@(()=>Delete(item.Id))" class="btn  btn-danger">Sınav Sil</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+  }
+</div>
+
+
+
+@code {
+  public DataResult<List<Quiz>> Quizes { get; set; } = null;
+
+  public void route(int id)
+  {
+    NavigationManager.NavigateTo($"/quiz/{id}");
+  }
+  public async void Delete(int id)
+  {
+    await _quizService.Delete(id);
+    Quizes = await _quizService.GetAllQuiz();
+    StateHasChanged();
+
+  }
+  protected override async Task OnInitializedAsync()
+  {
+    Quizes = await _quizService.GetAllQuiz();
+
+  }
+}

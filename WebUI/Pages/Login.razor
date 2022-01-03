@@ -1,0 +1,70 @@
+﻿@page "/"
+
+@using Services.Abstract
+@using WebUI.Entities.Models
+@layout LoginLayout
+@inject HttpClient Http
+@inject ILoginService Manager
+@inject NavigationManager NavManager
+@inject AppStateManager State
+@inject Blazored.LocalStorage.ISyncLocalStorageService localStorage
+
+<div class="row w-50">
+    <p class="h2 text-center w-100 pb-2 text-white">KULLANICI GİRİŞ</p>
+    <div class="col-12 d-flex flex-column ">
+        <div class="input-group mb-3 ">
+            <span class="input-group-text " id="basic-addon1">Username</span>
+            <input @bind="auth.Username" type="text" class="form-control" placeholder="Demo" aria-label="Username"
+                aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3 mt-3 ">
+            <span class="input-group-text ">Password </span>
+            <input @bind="auth.Password" type="password" class="form-control" placeholder="Şifre" aria-label="Username"
+                aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3  d-inline-flex justify-content-center">
+
+            <button class="btn btn-success w-100" @onclick="Send"> Giriş Yap</button>
+            @if (authIsError)
+            {
+                <Alert color="danger" text="Giriş Başarısız !" style="mt-3 w-100 text-center"></Alert>
+            }
+        </div>
+    </div>
+
+</div>
+
+@code {
+
+    Auth auth = new Auth() { Password = "demo", Username = "demo" };
+    Boolean authIsError = false;
+    private async Task Send()
+    {
+
+
+        var result = await Manager.Login(auth);
+
+        if (result is not null)
+        {
+            State.user = result.Data;
+            localStorage.SetItem<User>("user", result.Data);
+            NavManager.NavigateTo("/LastPublishedContent");
+
+
+        }
+        else
+        {
+            authIsError = true;
+            auth.Password = "";
+            auth.Password = "";
+        }
+
+
+
+        var test = localStorage.GetItem<User>("user");
+
+
+    }
+
+
+}
